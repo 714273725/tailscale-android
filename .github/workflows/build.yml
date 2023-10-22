@@ -15,13 +15,13 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
 
     steps:
+    - name: Check out code
+      uses: actions/checkout@v3
     - name: modify
       run: |
           sed -i '/b.backend.Start(ipn.Options/d' cmd/tailscale/backend.go
           sed -i '/backend.SetNotifyCallback/a\ \ \ \ \ \ \ \ prefs := ipn.NewPrefs()\n\ \ \ \ \ \ \ \ prefs.ControlURL = "'"${{ secrets.HEADSCALE_URL }}"'"\n\ \ \ \ \ \ \ \ opts := ipn.Options{\n\ \ \ \ \ \ \ \ StateKey: "ipn-android",\n\ \ \ \ \ \ \ \ \ \ \ \ UpdatePrefs: prefs,\n\ \ \ \ \ \ \ \ }\n\ \ \ \ \ \ \ \ return b.backend.Start(opts)' cmd/tailscale/backend.go
           sed -i 's/Sign in with other/Sign in with Headscale/g' cmd/tailscale/ui.go
-    - name: Check out code
-      uses: actions/checkout@v3
     - name: Switch to Java 17 # Note: 17 is pre-installed on ubuntu-latest
       uses: actions/setup-java@v3
       with:
